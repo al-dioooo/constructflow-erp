@@ -35,7 +35,6 @@ services:
     command:
       - --proxy-mode
       - --db-filter=^${ODOO_DB_NAME:-constructflow_erp}$
-      - --without-demo=all
     volumes:
       - odoo-web-data:/var/lib/odoo
       - ./config:/etc/odoo
