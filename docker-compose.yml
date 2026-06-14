@@ -1,0 +1,83 @@
+services:
+  db:
+    image: ${POSTGRES_IMAGE:-postgres:15}
+    container_name: contractor-erp-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: ${TZ:-Asia/Jakarta}
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo} -d ${POSTGRES_DB:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - odoo-net
+
+  odoo:
+    image: ${ODOO_IMAGE:-odoo:19.0}
+    container_name: contractor-erp-odoo
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      PORT: 5432
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      TZ: ${TZ:-Asia/Jakarta}
+    command:
+      - --proxy-mode
+      - --db-filter=^${ODOO_DB_NAME:-contractor_erp}$
+      - --admin-passwd=${ODOO_MASTER_PASSWORD:?set ODOO_MASTER_PASSWORD in .env}
+      - --without-demo=all
+      - --limit-memory-soft=1073741824
+      - --limit-memory-hard=1342177280
+      - --limit-time-cpu=120
+      - --limit-time-real=240
+      - --max-cron-threads=1
+      - --workers=0
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    expose:
+      - "8069"
+      - "8072"
+    networks:
+      - odoo-net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: contractor-erp-caddy
+    restart: unless-stopped
+    depends_on:
+      - odoo
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./caddy:/etc/caddy:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - odoo-net
+
+volumes:
+  odoo-db-data:
+  odoo-web-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  odoo-net:
+    driver: bridge
