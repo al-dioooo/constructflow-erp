@@ -1,0 +1,18 @@
+<odoo>
+    <!-- ============================================================ -->
+    <!--  Purchase Order Line — Add project_id and stock_location_id  -->
+    <!-- ============================================================ -->
+
+    <record id="view_purchase_order_form_inherit_project" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.contractor</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_qty']" position="after">
+                <field name="project_id" optional="show"/>
+                <field name="stock_location_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

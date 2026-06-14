@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_contractor_worker,contractor.worker,model_contractor_worker,base.group_user,1,1,1,1
 access_contractor_wage_recap,contractor.wage.recap,model_contractor_wage_recap,base.group_user,1,1,1,1
 access_contractor_material_purchase,contractor.material.purchase,model_contractor_material_purchase,base.group_user,1,1,1,1
+access_contractor_material_usage,contractor.material.usage,model_contractor_material_usage,base.group_user,1,1,1,1

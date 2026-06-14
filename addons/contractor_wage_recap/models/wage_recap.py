@@ -66,30 +66,3 @@ class ContractorWageRecap(models.Model):
         for rec in self:
             if rec.worker_id and not rec.daily_wage:
                 rec.daily_wage = rec.worker_id.default_daily_wage
-
-
-class ContractorMaterialPurchase(models.Model):
-    _name = "contractor.material.purchase"
-    _description = "Material Purchase Record"
-    _order = "purchase_date desc"
-
-    name = fields.Char(required=True, string="Material Name")
-    project_id = fields.Many2one("project.project", required=True)
-    supplier_id = fields.Many2one("res.partner", string="Supplier")
-    purchase_date = fields.Date(required=True, default=fields.Date.context_today)
-    quantity = fields.Float(required=True, default=1.0)
-    unit = fields.Char(default="pcs")
-    unit_price = fields.Monetary(currency_field="currency_id")
-    total_price = fields.Monetary(compute="_compute_total_price", store=True, currency_field="currency_id")
-    payment_status = fields.Selection([
-        ("unpaid", "Unpaid"),
-        ("paid", "Paid"),
-    ], default="unpaid")
-    receipt_reference = fields.Char(string="Receipt/Photo Reference")
-    notes = fields.Text()
-    currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
-
-    @api.depends("quantity", "unit_price")
-    def _compute_total_price(self):
-        for rec in self:
-            rec.total_price = (rec.quantity or 0.0) * (rec.unit_price or 0.0)

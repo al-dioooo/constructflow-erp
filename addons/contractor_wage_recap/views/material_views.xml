@@ -1,0 +1,132 @@
+<odoo>
+    <!-- ============================================================ -->
+    <!--  Material Purchase — Views (Inventory-integrated)            -->
+    <!-- ============================================================ -->
+
+    <record id="view_contractor_material_purchase_tree" model="ir.ui.view">
+        <field name="name">contractor.material.purchase.tree</field>
+        <field name="model">contractor.material.purchase</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0" decoration-success="payment_status == 'paid'" decoration-warning="payment_status == 'unpaid'">
+                <field name="purchase_date"/>
+                <field name="project_id"/>
+                <field name="supplier_id"/>
+                <field name="product_id"/>
+                <field name="name"/>
+                <field name="quantity"/>
+                <field name="product_uom_id" string="UoM"/>
+                <field name="unit_price"/>
+                <field name="total_price" sum="Total"/>
+                <field name="stock_location_id" optional="hide"/>
+                <field name="purchase_order_id" optional="hide"/>
+                <field name="payment_status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_contractor_material_purchase_form" model="ir.ui.view">
+        <field name="name">contractor.material.purchase.form</field>
+        <field name="model">contractor.material.purchase</field>
+        <field name="arch" type="xml">
+            <form create="0" delete="0">
+                <sheet>
+                    <group>
+                        <group string="Purchase Details">
+                            <field name="purchase_date"/>
+                            <field name="project_id"/>
+                            <field name="supplier_id"/>
+                            <field name="product_id"/>
+                            <field name="name"/>
+                        </group>
+                        <group string="Quantity &amp; Price">
+                            <field name="quantity"/>
+                            <field name="product_uom_id"/>
+                            <field name="unit_price"/>
+                            <field name="total_price" readonly="1"/>
+                            <field name="payment_status"/>
+                            <field name="receipt_reference"/>
+                        </group>
+                    </group>
+                    <group string="Inventory Integration">
+                        <group>
+                            <field name="stock_location_id"/>
+                            <field name="purchase_order_id"/>
+                            <field name="picking_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_contractor_material_purchase" model="ir.actions.act_window">
+        <field name="name">Material Purchases</field>
+        <field name="res_model">contractor.material.purchase</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!--  Material Usage — Views                                      -->
+    <!-- ============================================================ -->
+
+    <record id="view_contractor_material_usage_tree" model="ir.ui.view">
+        <field name="name">contractor.material.usage.tree</field>
+        <field name="model">contractor.material.usage</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="usage_date"/>
+                <field name="project_id"/>
+                <field name="product_id"/>
+                <field name="quantity" string="Qty Used"/>
+                <field name="product_uom_id" string="UoM"/>
+                <field name="source_location_id"/>
+                <field name="worker_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_contractor_material_usage_form" model="ir.ui.view">
+        <field name="name">contractor.material.usage.form</field>
+        <field name="model">contractor.material.usage</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Usage Details">
+                            <field name="usage_date"/>
+                            <field name="project_id"/>
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="product_uom_id"/>
+                        </group>
+                        <group string="Location &amp; Responsible">
+                            <field name="source_location_id"/>
+                            <field name="worker_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_contractor_material_usage" model="ir.actions.act_window">
+        <field name="name">Material Usage</field>
+        <field name="res_model">contractor.material.usage</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!--  Menus — Material section under Contractor ERP               -->
+    <!-- ============================================================ -->
+
+    <menuitem id="menu_contractor_material" name="Materials" parent="contractor_wage_recap.menu_contractor_root" sequence="30"/>
+    <menuitem id="menu_contractor_material_purchase" name="Material Purchases" parent="menu_contractor_material" action="action_contractor_material_purchase" sequence="10"/>
+    <menuitem id="menu_contractor_material_usage" name="Material Usage" parent="menu_contractor_material" action="action_contractor_material_usage" sequence="20"/>
+
+</odoo>
