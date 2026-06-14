@@ -1,0 +1,4 @@
+{$DOMAIN} {
+    encode gzip zstd
+    reverse_proxy odoo:8069
+}
