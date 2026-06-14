@@ -1,7 +1,7 @@
 services:
   db:
     image: ${POSTGRES_IMAGE:-postgres:15}
-    container_name: contractor-erp-db
+    container_name: constructflow-erp-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
@@ -20,8 +20,8 @@ services:
       - odoo-net
 
   odoo:
-    image: ${ODOO_IMAGE:-odoo:19.0}
-    container_name: contractor-erp-odoo
+    image: ${ODOO_IMAGE:-odoo:17.0}
+    container_name: constructflow-erp-odoo
     restart: unless-stopped
     depends_on:
       db:
@@ -34,7 +34,7 @@ services:
       TZ: ${TZ:-Asia/Jakarta}
     command:
       - --proxy-mode
-      - --db-filter=^${ODOO_DB_NAME:-contractor_erp}$
+      - --db-filter=^${ODOO_DB_NAME:-constructflow_erp}$
       - --admin-passwd=${ODOO_MASTER_PASSWORD:?set ODOO_MASTER_PASSWORD in .env}
       - --without-demo=all
       - --limit-memory-soft=1073741824
@@ -55,7 +55,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
-    container_name: contractor-erp-caddy
+    container_name: constructflow-erp-caddy
     restart: unless-stopped
     depends_on:
       - odoo

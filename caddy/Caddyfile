@@ -1,4 +1,17 @@
 {$DOMAIN} {
     encode gzip zstd
-    reverse_proxy odoo:8069
+
+    # Odoo longpolling (real-time notifications / chat)
+    handle /longpolling/* {
+        reverse_proxy odoo:8072
+    }
+
+    # All other traffic goes to Odoo main process
+    handle {
+        reverse_proxy odoo:8069 {
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-For {remote}
+            header_up X-Real-IP {remote}
+        }
+    }
 }
