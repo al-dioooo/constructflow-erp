@@ -20,7 +20,7 @@ services:
       - odoo-net
 
   odoo:
-    image: ${ODOO_IMAGE:-odoo:17.0}
+    image: ${ODOO_IMAGE:-odoo:19.0}
     container_name: constructflow-erp-odoo
     restart: unless-stopped
     depends_on:
@@ -35,48 +35,21 @@ services:
     command:
       - --proxy-mode
       - --db-filter=^${ODOO_DB_NAME:-constructflow_erp}$
-      - --admin-passwd=${ODOO_MASTER_PASSWORD:?set ODOO_MASTER_PASSWORD in .env}
       - --without-demo=all
-      - --limit-memory-soft=1073741824
-      - --limit-memory-hard=1342177280
-      - --limit-time-cpu=120
-      - --limit-time-real=240
-      - --max-cron-threads=1
-      - --workers=0
     volumes:
       - odoo-web-data:/var/lib/odoo
       - ./config:/etc/odoo
       - ./addons:/mnt/extra-addons
-    expose:
-      - "8069"
-      - "8072"
-    networks:
-      - odoo-net
-
-  caddy:
-    image: caddy:2-alpine
-    container_name: constructflow-erp-caddy
-    restart: unless-stopped
-    depends_on:
-      - odoo
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    environment:
-      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
-    volumes:
-      - ./caddy:/etc/caddy:ro
-      - caddy-data:/data
-      - caddy-config:/config
+      # Bind only to localhost — nginx handles external TLS termination
+      - "127.0.0.1:8069:8069"
+      - "127.0.0.1:8072:8072"
     networks:
       - odoo-net
 
 volumes:
   odoo-db-data:
   odoo-web-data:
-  caddy-data:
-  caddy-config:
 
 networks:
   odoo-net:
